@@ -1,3 +1,6 @@
+#author: Divyansh 
+
+#Loading packages
 library(readr)
 #install.packages("sp")
 library(sp)
@@ -24,6 +27,7 @@ locationPoint <- SpatialPoints(locationCoord)
 stationCoord <- cbind(lngS,latS)
 stationPoint <- SpatialPoints(stationCoord)
 
+#Getting vector between location and stations
 proc <- spDistsN1(locationPoint[1,], stationPoint[1,], longlat = FALSE)
 
 pairedData <- data.frame(Lng=numeric(), 
@@ -35,14 +39,14 @@ pairedData <- data.frame(Lng=numeric(),
                          Country=character(),
                          stringsAsFactors = FALSE)
 
-#staion Data is smaller than Location data and need only 
+#Location data is smaller than stations so need only stations for some locations
 for (l in 1:rowsL){
   Dists <- spDistsN1(pts = stationPoint, locationPoint[l,] )
-  
+  #Nearest Distance index
   Nearest <- which(Dists == min(Dists))
-
+  #Filling data frame for locations with station codes
   pairedData[l,] <- c(location[l,]$Lat, location[l,]$Lng, stations[Nearest,]$Station, location[l,]$City, location[l,]$State, location[l,]$Metro,location[l,]$Country)  
   
 }
-
+#writing CSV
 write.csv(pairedData, file = "LocationwithStationCode.csv",row.names=FALSE)
